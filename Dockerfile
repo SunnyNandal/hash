@@ -20,7 +20,9 @@ RUN apt-get update -y && \
     ruby-full \
     wget \
     golang \
-    ca-certificates && \
+    ca-certificates \
+    gnupg \
+    lsb-release && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -29,10 +31,11 @@ RUN go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && \
     cp /root/go/bin/nuclei /usr/local/bin/ && \
     nuclei -update-templates || true
 
-# Install Metasploit
-RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > /tmp/msfinstall && \
-    chmod +x /tmp/msfinstall && \
-    /tmp/msfinstall || true
+# Install Metasploit (using official method)
+RUN curl -fsSL https://apt.metasploit.com/metasploit-framework.gpg.key | gpg --dearmor -o /usr/share/keyrings/metasploit-framework-archive-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/metasploit-framework-archive-keyring.gpg] https://apt.metasploit.com/ lucid main" | tee /etc/apt/sources.list.d/metasploit-framework.list && \
+    apt-get update -y && \
+    apt-get install -y metasploit-framework || true
 
 # Set working directory
 WORKDIR /app

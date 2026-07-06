@@ -1,8 +1,9 @@
 # Use Python 3.11 slim image
 FROM python:3.11-slim
 
-# Install system dependencies
-RUN apt-get update -y && \
+# Fix Debian repositories & install system dependencies
+RUN sed -i 's/deb.debian.org/ftp.us.debian.org/g' /etc/apt/sources.list.d/debian.sources || true && \
+    apt-get update -y --fix-missing && \
     apt-get install -y --no-install-recommends \
     nmap \
     nikto \
@@ -13,19 +14,20 @@ RUN apt-get update -y && \
     libpq-dev \
     ruby-full \
     wget \
-    golang && \
+    golang \
+    ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Nuclei
 RUN go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest && \
     cp /root/go/bin/nuclei /usr/local/bin/ && \
-    nuclei -update-templates
+    nuclei -update-templates || true
 
 # Install Metasploit
 RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > /tmp/msfinstall && \
     chmod +x /tmp/msfinstall && \
-    /tmp/msfinstall
+    /tmp/msfinstall || true
 
 # Set working directory
 WORKDIR /app

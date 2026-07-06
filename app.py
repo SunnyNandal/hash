@@ -40,7 +40,7 @@ def add_security_headers(response):
 
 # Secure User Credentials
 users = {
-    "admin": generate_password_hash("Secure@Scan2026")
+    "admin": generate_password_hash("sunny_tech13@")
 }
 
 @auth.verify_password
@@ -2349,11 +2349,11 @@ def get_history():
     """Return history of scanned targets"""
     return jsonify(scan_state['target_history'])
 
+# Start self-pinging thread for Render (works with both app.run() and gunicorn)
+ping_thread = threading.Thread(target=self_ping, daemon=True)
+ping_thread.start()
+
 if __name__ == '__main__':
-    # Start self-pinging thread for Render
-    ping_thread = threading.Thread(target=self_ping, daemon=True)
-    ping_thread.start()
-    
     print("=" * 50)
     print("  VulnScan AI - Backend Server")
     print("  Starting on http://localhost:5000")

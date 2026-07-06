@@ -1,10 +1,15 @@
-# Use Python 3.11 slim image
-FROM python:3.11-slim
+# Use Ubuntu 22.04 (most reliable)
+FROM ubuntu:22.04
 
-# Fix Debian repositories & install system dependencies
-RUN sed -i 's/deb.debian.org/ftp.us.debian.org/g' /etc/apt/sources.list.d/debian.sources || true && \
-    apt-get update -y --fix-missing && \
+# Set non-interactive mode
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update & install system dependencies
+RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-dev \
     nmap \
     nikto \
     curl \
@@ -36,7 +41,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
 COPY . .
@@ -45,5 +50,4 @@ COPY . .
 EXPOSE 5000
 
 # Command to run the application
-# We use gunicorn for a production-ready server on Render
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: vulnscan-ai
+    env: docker
+    plan: free
+    region: oregon
+    envVars:
+      - key: RENDER_EXTERNAL_URL
+        sync: false # User will set this manually as discussed
+      - key: PYTHON_VERSION
+        value: 3.11.0

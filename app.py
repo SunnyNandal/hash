@@ -565,7 +565,6 @@ def run_advanced_fingerprinting(target):
             except: pass
 
 @app.route('/ask_ollama', methods=['POST'])
-@auth.login_required
 def ask_ollama_route():
     """Route to manually ask Ollama for help"""
     data = request.json
@@ -580,7 +579,6 @@ def ask_ollama_route():
         return jsonify({"error": "Failed to get guidance from Ollama"}), 500
 
 @app.route('/manual_tool', methods=['POST'])
-@auth.login_required
 def manual_tool():
     """Execute manual offensive tools"""
     data = request.json
